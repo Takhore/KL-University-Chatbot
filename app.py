@@ -45,7 +45,7 @@ def initialize_rag():
         # Create vector database
         embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
         
         # Initialize the 2026 Gemini 3 Model
         llm = ChatGoogleGenerativeAI(model="gemini-3-flash-preview", google_api_key=api_key)
@@ -101,4 +101,5 @@ if user_input := st.chat_input("Type your question here..."):
             except Exception as e:
                 st.error(f"Chat Error: {e}")
         else:
+
             st.error("System is offline. Please check your API key.")
