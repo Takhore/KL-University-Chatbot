@@ -5,7 +5,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 # Fixed for LangChain v1 (2026 Release)
 from langchain_classic.chains import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
@@ -24,7 +24,15 @@ st.markdown("Ask me anything about university rules, attendance, or CGPA!")
 # IMPORTANT: Delete this specific line before dragging to GitHub!
 
 # This reads the key from the environment
-api_key = os.environ.get("GOOGLE_API_KEY")
+# This pulls your new Groq key securely from Streamlit Cloud Secrets
+groq_api_key = st.secrets["GROQ_API_KEY"]
+
+# This initializes the high-speed Llama 3 model
+llm = ChatGroq(
+    groq_api_key=groq_api_key, 
+    model_name="llama-3.3-70b-versatile",
+    temperature=0
+)
 
 # --- 3. LOAD DATA (Cached to be fast) ---
 @st.cache_resource
@@ -103,3 +111,4 @@ if user_input := st.chat_input("Type your question here..."):
         else:
 
             st.error("System is offline. Please check your API key.")
+
