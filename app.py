@@ -20,26 +20,19 @@ st.title("🤖 KL University AI Assistant")
 st.markdown("Ask me anything about university rules, attendance, or CGPA!")
 
 # --- 2. CONFIGURATION & SECRETS ---
-# This line makes it work on your LOCALHOST (Laptop)
-# IMPORTANT: Delete this specific line before dragging to GitHub!
-
-# This reads the key from the environment
 # This pulls your new Groq key securely from Streamlit Cloud Secrets
-groq_api_key = st.secrets["GROQ_API_KEY"]
-
-# This initializes the high-speed Llama 3 model
-llm = ChatGroq(
-    groq_api_key=groq_api_key, 
-    model_name="llama-3.3-70b-versatile",
-    temperature=0
-)
+try:
+    groq_api_key = st.secrets["GROQ_API_KEY"]
+except KeyError:
+    st.error("GROQ_API_KEY not found in Streamlit Secrets!")
+    st.stop()
 
 # --- 3. LOAD DATA (Cached to be fast) ---
 @st.cache_resource
 def initialize_rag():
     # Load the knowledge base
     if not os.path.exists("knowledge_base.txt"):
-        st.error("Missing 'knowledge_base.txt' file in I:\RAG_Project!")
+        st.error("Missing 'knowledge_base.txt' file!")
         return None
 
     try:
@@ -55,8 +48,13 @@ def initialize_rag():
         vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
         
-        # Initialize the 2026 Gemini 3 Model
-        llm = ChatGoogleGenerativeAI(model="gemini-3-flash-preview", google_api_key=api_key)
+        # --- FIXED SECTION: INITIALIZE GROQ LLM ---
+        # We define the LLM here so it is part of the cached RAG chain
+        llm = ChatGroq(
+            groq_api_key=groq_api_key, 
+            model_name="llama-3.3-70b-versatile",
+            temperature=0
+        )
         
         # System prompt for the University context
         system_prompt = (
@@ -74,6 +72,7 @@ def initialize_rag():
         # Build the RAG chain
         question_answer_chain = create_stuff_documents_chain(llm, prompt)
         return create_retrieval_chain(retriever, question_answer_chain)
+        
     except Exception as e:
         st.error(f"Initialization Error: {e}")
         return None
@@ -109,6 +108,4 @@ if user_input := st.chat_input("Type your question here..."):
             except Exception as e:
                 st.error(f"Chat Error: {e}")
         else:
-
             st.error("System is offline. Please check your API key.")
-
