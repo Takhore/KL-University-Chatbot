@@ -1,8 +1,11 @@
 import streamlit as st
 import os
 import warnings
-# --- UPDATED IMPORT: Using Playwright for dynamic web scraping ---
-from langchain_community.document_loaders import TextLoader, PlaywrightWebBaseLoader
+import subprocess
+
+# --- UPDATED IMPORTS: Correct path for Playwright in 2026 ---
+from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders.playwright import PlaywrightWebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -28,31 +31,28 @@ except KeyError:
 @st.cache_resource
 def initialize_rag(url=None):
     try:
-        # Step 1: Decide which data to load
         if url:
-            # --- UPDATED: Playwright handles JavaScript-heavy sites like the faculty portal ---
+            # FORCE INSTALL: Ensures browser engine exists on Streamlit Cloud
+            subprocess.run(["playwright", "install", "chromium"])
+            
+            # Loader with a small delay to let JavaScript finish loading faculty data
             loader = PlaywrightWebBaseLoader(url)
             st.toast(f"Launching Headless Browser for: {url}")
         else:
-            # Fallback to local Knowledge Base
             if not os.path.exists("knowledge_base.txt"):
                 st.error("Missing 'knowledge_base.txt' file!")
                 return None
             loader = TextLoader("knowledge_base.txt", encoding="utf-8")
         
-        # This will now wait for the page to render before loading
         docs = loader.load()
         
-        # Step 2: Split, Embed, and Store
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         splits = text_splitter.split_documents(docs)
         
         embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        # Chroma handles the vector storage
         vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
         
-        # Step 3: Initialize Groq LLM
         llm = ChatGroq(
             groq_api_key=groq_api_key, 
             model_name="llama-3.3-70b-versatile",
@@ -80,9 +80,8 @@ def initialize_rag(url=None):
 
 # --- 4. SIDEBAR FOR URL INPUT ---
 with st.sidebar:
-    st.header("🌐 Web Study Mode (Headless)")
-    st.write("Using Playwright to study dynamic websites.")
-    web_url = st.text_input("Enter Website URL:", placeholder="https://www.klu.ac.in/...")
+    st.header("🌐 Web Study Mode")
+    web_url = st.text_input("Enter Website URL:", placeholder="https://kluone.netlify.app/...")
     
     if st.button("Learn from Website"):
         if web_url:
@@ -91,11 +90,10 @@ with st.sidebar:
         else:
             st.warning("Please enter a URL first.")
     
-    if st.button("Reset to KLU File"):
+    if st.button("Reset to Local File"):
         st.session_state.rag_chain = initialize_rag(url=None)
         st.info("Reverted to knowledge_base.txt")
 
-# Start/Get the RAG engine from session state
 if "rag_chain" not in st.session_state:
     st.session_state.rag_chain = initialize_rag()
 
@@ -109,7 +107,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if user_input := st.chat_input("Type your question here..."):
+if user_input := st.chat_input("Ask about faculty cabins..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
@@ -117,12 +115,10 @@ if user_input := st.chat_input("Type your question here..."):
     with st.chat_message("assistant"):
         if rag_chain:
             try:
-                with st.spinner("Analyzing data via Headless Browser..."):
+                with st.spinner("Processing..."):
                     response = rag_chain.invoke({"input": user_input})
                     answer = response["answer"]
                     st.markdown(answer)
                     st.session_state.messages.append({"role": "assistant", "content": answer})
             except Exception as e:
                 st.error(f"Chat Error: {e}")
-        else:
-            st.error("System is offline.")
