@@ -3,9 +3,10 @@ import os
 import warnings
 import subprocess
 
-# --- UPDATED IMPORTS: Correct path for Playwright in 2026 ---
+# --- CORRECT IMPORTS FOR 2026 ---
 from langchain_community.document_loaders import TextLoader
-from langchain_community.document_loaders.playwright import PlaywrightWebBaseLoader
+# Using the more stable PlaywrightURLLoader for Cloud environments
+from langchain_community.document_loaders import PlaywrightURLLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -32,12 +33,15 @@ except KeyError:
 def initialize_rag(url=None):
     try:
         if url:
-            # FORCE INSTALL: Ensures browser engine exists on Streamlit Cloud
-            subprocess.run(["playwright", "install", "chromium"])
+            # Step A: Install Browser Binaries (required for Streamlit Cloud)
+            try:
+                subprocess.run(["playwright", "install", "chromium"], check=True)
+            except Exception as e:
+                st.warning(f"Note: Browser install check: {e}")
             
-            # Loader with a small delay to let JavaScript finish loading faculty data
-            loader = PlaywrightWebBaseLoader(url)
-            st.toast(f"Launching Headless Browser for: {url}")
+            # Step B: Load using PlaywrightURLLoader (better for CSR sites)
+            loader = PlaywrightURLLoader(urls=[url], remove_selectors=["header", "footer"])
+            st.toast(f"Analyzing: {url}")
         else:
             if not os.path.exists("knowledge_base.txt"):
                 st.error("Missing 'knowledge_base.txt' file!")
@@ -62,8 +66,7 @@ def initialize_rag(url=None):
         system_prompt = (
             "You are an intelligent university assistant. "
             "Use the provided context to answer the question accurately. "
-            "If the answer isn't there, say you don't have that info."
-            "\n\nContext: {context}"
+            "Context: {context}"
         )
         
         prompt = ChatPromptTemplate.from_messages([
@@ -78,19 +81,19 @@ def initialize_rag(url=None):
         st.error(f"Initialization Error: {e}")
         return None
 
-# --- 4. SIDEBAR FOR URL INPUT ---
+# --- 4. SIDEBAR ---
 with st.sidebar:
-    st.header("🌐 Web Study Mode")
+    st.header("🌐 Knowledge Source")
     web_url = st.text_input("Enter Website URL:", placeholder="https://kluone.netlify.app/...")
     
     if st.button("Learn from Website"):
         if web_url:
             st.session_state.rag_chain = initialize_rag(url=web_url)
-            st.success("Headless Crawl Complete!")
+            st.success("Knowledge Base Updated!")
         else:
-            st.warning("Please enter a URL first.")
+            st.warning("Please enter a URL.")
     
-    if st.button("Reset to Local File"):
+    if st.button("Reset to File"):
         st.session_state.rag_chain = initialize_rag(url=None)
         st.info("Reverted to knowledge_base.txt")
 
@@ -99,7 +102,7 @@ if "rag_chain" not in st.session_state:
 
 rag_chain = st.session_state.rag_chain
 
-# --- 5. CHAT INTERFACE ---
+# --- 5. CHAT ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -107,7 +110,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if user_input := st.chat_input("Ask about faculty cabins..."):
+if user_input := st.chat_input("Ask a question..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
@@ -115,7 +118,7 @@ if user_input := st.chat_input("Ask about faculty cabins..."):
     with st.chat_message("assistant"):
         if rag_chain:
             try:
-                with st.spinner("Processing..."):
+                with st.spinner("Searching..."):
                     response = rag_chain.invoke({"input": user_input})
                     answer = response["answer"]
                     st.markdown(answer)
