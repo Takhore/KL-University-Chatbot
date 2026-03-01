@@ -1,9 +1,8 @@
-langchain
-langchain-community
+langchain==0.3.0
+langchain-community==0.3.0
 langchain-groq
 langchain-huggingface
 playwright
-langchain-playwright
 beautifulsoup4
 sentence-transformers
 chromadb
