@@ -19,6 +19,28 @@ from langchain_core.prompts import ChatPromptTemplate
 
 warnings.filterwarnings("ignore")
 
+import streamlit as st
+import os
+import warnings
+import subprocess
+from langchain_community.document_loaders import TextLoader
+# ... (all your other 'from' imports)
+
+# --- 1. PAGE SETUP (Must be the first Streamlit command) ---
+st.set_page_config(page_title="KL University Assistant", page_icon="🤖")
+
+# --- 2. HIDE STREAMLIT BRANDING (Paste it here) ---
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            [data-testid="stToolbar"] {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
+
 # --- 1. PAGE SETUP ---
 st.set_page_config(page_title="KL University Assistant", page_icon="🤖")
 st.title("🤖 KL University AI Assistant")
