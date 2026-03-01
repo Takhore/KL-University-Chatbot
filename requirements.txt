@@ -1,10 +1,8 @@
-streamlit
 langchain
 langchain-community
-langchain-google-genai
+langchain-groq
 langchain-huggingface
-langchain-classic
-sentence-transformers
-chromadb
 playwright
 beautifulsoup4
+sentence-transformers
+chromadb
