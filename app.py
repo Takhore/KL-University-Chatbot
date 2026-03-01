@@ -4,8 +4,9 @@ import warnings
 import subprocess
 
 # --- STABLE 2026 IMPORTS ---
+# TextLoader is in the main community folder
 from langchain_community.document_loaders import TextLoader
-# We use PlaywrightURLLoader as it is the most stable for Streamlit Cloud
+# PlaywrightURLLoader is the updated standard for dynamic web pages
 from langchain_community.document_loaders import PlaywrightURLLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -33,15 +34,16 @@ except KeyError:
 def initialize_rag(url=None):
     try:
         if url:
-            # Ensure Playwright browser is installed on the Cloud server
+            # Step A: Install the browser engine directly on the Streamlit server
+            # This is a mandatory 2026 step for cloud deployments
             try:
                 subprocess.run(["playwright", "install", "chromium"], check=True)
             except Exception as e:
-                st.info(f"System: Browser already prepared.")
+                st.info(f"System: Browser check complete.")
             
-            # Using the simplified PlaywrightURLLoader
+            # Step B: Load using the stable URL Loader
             loader = PlaywrightURLLoader(urls=[url], remove_selectors=["header", "footer"])
-            st.toast(f"Learning from: {url}")
+            st.toast(f"Analyzing faculty data: {url}")
         else:
             if not os.path.exists("knowledge_base.txt"):
                 st.error("Missing 'knowledge_base.txt' file!")
@@ -50,6 +52,7 @@ def initialize_rag(url=None):
         
         docs = loader.load()
         
+        # Step 2: Processing (Splitting, Embedding, Vector Store)
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         splits = text_splitter.split_documents(docs)
         
@@ -57,6 +60,7 @@ def initialize_rag(url=None):
         vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
         
+        # Step 3: LLM Setup
         llm = ChatGroq(
             groq_api_key=groq_api_key, 
             model_name="llama-3.3-70b-versatile",
@@ -74,8 +78,8 @@ def initialize_rag(url=None):
             ("human", "{input}"),
         ])
         
-        question_answer_chain = create_stuff_documents_chain(llm, prompt)
-        return create_retrieval_chain(retriever, question_answer_chain)
+        qa_chain = create_stuff_documents_chain(llm, prompt)
+        return create_retrieval_chain(retriever, qa_chain)
         
     except Exception as e:
         st.error(f"Initialization Error: {e}")
@@ -89,13 +93,13 @@ with st.sidebar:
     if st.button("Learn from Website"):
         if web_url:
             st.session_state.rag_chain = initialize_rag(url=web_url)
-            st.success("Knowledge Base Updated!")
+            st.success("Web knowledge synchronized!")
         else:
-            st.warning("Please enter a URL first.")
+            st.warning("Please enter a URL.")
     
     if st.button("Reset to File"):
         st.session_state.rag_chain = initialize_rag(url=None)
-        st.info("Reverted to knowledge_base.txt")
+        st.info("Reverted to local database.")
 
 if "rag_chain" not in st.session_state:
     st.session_state.rag_chain = initialize_rag()
@@ -110,7 +114,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if user_input := st.chat_input("Ask about faculty or university info..."):
+if user_input := st.chat_input("Ask a question..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
