@@ -5,11 +5,4 @@ langchain-huggingface
 playwright
 beautifulsoup4
 sentence-transformers
-chromadblangchain
-langchain-community
-langchain-groq
-langchain-huggingface
-playwright
-beautifulsoup4
-sentence-transformers
 chromadb
