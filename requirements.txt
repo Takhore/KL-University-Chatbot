@@ -7,3 +7,4 @@ playwright
 beautifulsoup4
 sentence-transformers
 chromadb
+unstructured
