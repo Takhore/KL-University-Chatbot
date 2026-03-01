@@ -1,4 +1,4 @@
-langchain==1.0.1
+langchain
 langchain-community
 langchain-classic
 langchain-groq
