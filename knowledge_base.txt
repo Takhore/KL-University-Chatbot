@@ -1,0 +1,84 @@
+KL UNIVERSITY (KLEF) - FRESHER STUDENT KNOWLEDGE BASE
+1. COLLEGE TIMINGS & SHIFTS
+
+1st Year B.Tech Students: Classes run strictly from 7:20 AM to 1:40 PM.
+
+4th Year B.Tech Students: Classes also run from 7:20 AM to 1:40 PM.
+
+2nd & 3rd Year B.Tech Students: Classes run from 9:00 AM to 5:00 PM.
+
+Non-Engineering (BBA, BCA, etc.): Typically follow a 9:00 AM to 1:00 PM or 5:00 PM schedule depending on lab work.
+
+Sundays are strict holidays. Lunch breaks are usually 50 minutes.
+
+2. ATTENDANCE RULES & PERCENTAGES
+
+The Minimum Requirement: The university mandates an 85% attendance rate for all programs (except Law, which is 70%).
+
+The 75% Hard Cutoff: Students must maintain a minimum of 75% attendance to write the Semester-End Examinations.
+
+Condonation (Medical/Sports): If attendance falls between 75% and 85%, the university may grant "condonation" (forgiveness) if the student provides valid medical certificates or proof of representing the university in sports/fests (OD - On Duty leave).
+
+Below 75%: If attendance drops below 75% (or 65% for Law), the student is strictly detained. No excuses are accepted below this threshold.
+
+Attendance Marks: Students with attendance above 85% receive bonus internal marks (e.g., 85-88% = 1 mark, 98-100% = 5 marks).
+
+3. L-T-P-S WEIGHTAGE IN ATTENDANCE
+
+Courses are broken down into L-T-P-S components: Lecture, Tutorial, Practical, and Skill.
+
+Calculation: Attendance is calculated cumulatively across all these components, not just theory. Missing a 2-hour Practical (P) class will drop your percentage much faster than missing a 1-hour Lecture (L). You must attend all components to maintain your overall subject attendance.
+
+4. WHAT TO DO IF DETAINED
+
+Being detained means you failed to meet the 75% attendance mark or the 40% internal marks requirement for a specific subject.
+
+Consequence: You will receive a "Not Attended" (NA) or "Fail" (F) grade and will not be allowed to write the final exam for that subject.
+
+Solution: You cannot simply rewrite the exam. You must re-register for the entire course, usually during the Summer Term, pay a re-registration fee, and attend the classes again to clear the backlog.
+
+5. HOW TO APPLY FOR LEAVE & USE ERP
+
+ERP Portal: All university administration is handled through the KLU ERP portal (newerp.kluniversity.in).
+
+Short Leaves (Under 1 week): Must be applied for via the ERP portal and approved by your class counselor and Head of Department (HoD) before you take the leave.
+
+Long Leaves/Medical: Requires physical submission of medical certificates to the HoD and Dean of Academics immediately upon returning.
+
+Hostel Leave: You must separately inform your Hostel Warden/Superintendent before leaving the campus, or it is considered a breach of discipline.
+
+6. GRADING SYSTEM & HOW TO CALCULATE CGPA
+
+KLU uses a 10-point grading scale: O (10), A+ (9), A (8), B+ (7), B (6), C (5), F (0 for Fail).
+
+Passing Marks: You need a minimum CGPA of 4.5 to graduate B.Tech (5.5 for M.Tech).
+
+CGPA to Percentage Formula: If you need to write your percentage on a resume, use the official KLU conversion formula:
+Percentage = (10 x CGPA) - 7.5
+(Example: A CGPA of 8.0 would be (10 x 8.0) - 7.5 = 72.5%)
+
+7. CAMPUS PLACEMENTS
+
+KLU boasts a near 100% placement rate for eligible students. To be eligible, you usually must have zero active backlogs and a CGPA above a certain threshold (often 6.75+).
+
+Super Dream Offers: Packages above ₹20 LPA (e.g., Amazon, JP Morgan).
+
+Dream Offers: Packages between ₹10 LPA and ₹18 LPA.
+
+Mass Recruiters: Packages between ₹6 LPA and ₹9 LPA (e.g., TCS, Cognizant, Deloitte).
+
+8. COURSES OFFERED
+
+B.Tech: Computer Science (CSE), AI & Data Science, Electronics & Communication (ECE), Mechanical, Civil, Electrical, and Bio-Technology.
+
+Other UG Programs: BBA, BCA, B.Com, B.Sc, BA, B.Arch (Architecture), B.Pharm, and Law (BBA-LLB).
+
+PG Programs: M.Tech, MBA, MCA, and Ph.D. programs.
+
+9. CAMPUS DISCIPLINE & DRESS CODE
+
+Dress Code: Strictly formal. Boys must wear tucked-in formal shirts and shoes. Girls must wear Kurtas, Tops with Leggings, or Punjabi suits (dupatta usually required). No torn jeans or casual t-shirts.
+
+ID Cards: Must be worn physically around the neck at all times on campus. The color of your lanyard indicates your year/department.
+
+Phones: Strictly restricted in academic corridors and classrooms.
