@@ -3,17 +3,18 @@ import os
 import warnings
 import subprocess
 
-# --- STABLE 2026 IMPORTS ---
-# TextLoader is in the main community folder
+# --- CORRECT 2026 IMPORTS ---
 from langchain_community.document_loaders import TextLoader
-# PlaywrightURLLoader is the updated standard for dynamic web pages
 from langchain_community.document_loaders import PlaywrightURLLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_groq import ChatGroq
+
+# These were moved to langchain_classic in 2025/2026
 from langchain_classic.chains import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+
 from langchain_core.prompts import ChatPromptTemplate
 
 warnings.filterwarnings("ignore")
@@ -34,16 +35,14 @@ except KeyError:
 def initialize_rag(url=None):
     try:
         if url:
-            # Step A: Install the browser engine directly on the Streamlit server
-            # This is a mandatory 2026 step for cloud deployments
+            # Install browser for cloud server
             try:
                 subprocess.run(["playwright", "install", "chromium"], check=True)
             except Exception as e:
-                st.info(f"System: Browser check complete.")
+                st.info("System: Browser initialized.")
             
-            # Step B: Load using the stable URL Loader
             loader = PlaywrightURLLoader(urls=[url], remove_selectors=["header", "footer"])
-            st.toast(f"Analyzing faculty data: {url}")
+            st.toast(f"Analyzing: {url}")
         else:
             if not os.path.exists("knowledge_base.txt"):
                 st.error("Missing 'knowledge_base.txt' file!")
@@ -52,7 +51,6 @@ def initialize_rag(url=None):
         
         docs = loader.load()
         
-        # Step 2: Processing (Splitting, Embedding, Vector Store)
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         splits = text_splitter.split_documents(docs)
         
@@ -60,7 +58,6 @@ def initialize_rag(url=None):
         vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
         
-        # Step 3: LLM Setup
         llm = ChatGroq(
             groq_api_key=groq_api_key, 
             model_name="llama-3.3-70b-versatile",
@@ -69,8 +66,7 @@ def initialize_rag(url=None):
         
         system_prompt = (
             "You are an intelligent university assistant. "
-            "Use the provided context to answer the question accurately. "
-            "\n\nContext: {context}"
+            "Use context to answer. \n\nContext: {context}"
         )
         
         prompt = ChatPromptTemplate.from_messages([
@@ -78,8 +74,9 @@ def initialize_rag(url=None):
             ("human", "{input}"),
         ])
         
-        qa_chain = create_stuff_documents_chain(llm, prompt)
-        return create_retrieval_chain(retriever, qa_chain)
+        # FIXED: These now import from langchain_classic
+        question_answer_chain = create_stuff_documents_chain(llm, prompt)
+        return create_retrieval_chain(retriever, question_answer_chain)
         
     except Exception as e:
         st.error(f"Initialization Error: {e}")
@@ -88,25 +85,25 @@ def initialize_rag(url=None):
 # --- 4. SIDEBAR ---
 with st.sidebar:
     st.header("🌐 Knowledge Source")
-    web_url = st.text_input("Enter Website URL:", placeholder="https://kluone.netlify.app/...")
+    web_url = st.text_input("Enter URL:", placeholder="https://kluone.netlify.app/...")
     
-    if st.button("Learn from Website"):
+    if st.button("Learn Website"):
         if web_url:
             st.session_state.rag_chain = initialize_rag(url=web_url)
-            st.success("Web knowledge synchronized!")
+            st.success("Synced!")
         else:
-            st.warning("Please enter a URL.")
+            st.warning("Enter a URL.")
     
-    if st.button("Reset to File"):
+    if st.button("Reset"):
         st.session_state.rag_chain = initialize_rag(url=None)
-        st.info("Reverted to local database.")
+        st.info("Reverted to file.")
 
 if "rag_chain" not in st.session_state:
     st.session_state.rag_chain = initialize_rag()
 
 rag_chain = st.session_state.rag_chain
 
-# --- 5. CHAT INTERFACE ---
+# --- 5. CHAT ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
