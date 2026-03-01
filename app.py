@@ -1,8 +1,8 @@
 import streamlit as st
 import os
 import warnings
-# --- NEW IMPORT FOR WEB CRAWLING ---
-from langchain_community.document_loaders import TextLoader, WebBaseLoader
+# --- UPDATED IMPORT: Using Playwright for dynamic web scraping ---
+from langchain_community.document_loaders import TextLoader, PlaywrightWebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -30,9 +30,9 @@ def initialize_rag(url=None):
     try:
         # Step 1: Decide which data to load
         if url:
-            # Load from Website
-            loader = WebBaseLoader(url)
-            st.toast(f"Crawl started: {url}")
+            # --- UPDATED: Playwright handles JavaScript-heavy sites like the faculty portal ---
+            loader = PlaywrightWebBaseLoader(url)
+            st.toast(f"Launching Headless Browser for: {url}")
         else:
             # Fallback to local Knowledge Base
             if not os.path.exists("knowledge_base.txt"):
@@ -40,6 +40,7 @@ def initialize_rag(url=None):
                 return None
             loader = TextLoader("knowledge_base.txt", encoding="utf-8")
         
+        # This will now wait for the page to render before loading
         docs = loader.load()
         
         # Step 2: Split, Embed, and Store
@@ -47,7 +48,7 @@ def initialize_rag(url=None):
         splits = text_splitter.split_documents(docs)
         
         embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        # Use a unique collection name to avoid mixing web data with local data
+        # Chroma handles the vector storage
         vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
         
@@ -79,15 +80,14 @@ def initialize_rag(url=None):
 
 # --- 4. SIDEBAR FOR URL INPUT ---
 with st.sidebar:
-    st.header("🌐 Web Study Mode")
-    st.write("Paste a link to make the AI study a specific website.")
+    st.header("🌐 Web Study Mode (Headless)")
+    st.write("Using Playwright to study dynamic websites.")
     web_url = st.text_input("Enter Website URL:", placeholder="https://www.klu.ac.in/...")
     
     if st.button("Learn from Website"):
         if web_url:
-            # Force re-initialization with the new URL
             st.session_state.rag_chain = initialize_rag(url=web_url)
-            st.success("Knowledge Base Updated!")
+            st.success("Headless Crawl Complete!")
         else:
             st.warning("Please enter a URL first.")
     
@@ -101,7 +101,7 @@ if "rag_chain" not in st.session_state:
 
 rag_chain = st.session_state.rag_chain
 
-# --- 5. CHAT INTERFACE (Same as before) ---
+# --- 5. CHAT INTERFACE ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -117,7 +117,7 @@ if user_input := st.chat_input("Type your question here..."):
     with st.chat_message("assistant"):
         if rag_chain:
             try:
-                with st.spinner("Processing..."):
+                with st.spinner("Analyzing data via Headless Browser..."):
                     response = rag_chain.invoke({"input": user_input})
                     answer = response["answer"]
                     st.markdown(answer)
