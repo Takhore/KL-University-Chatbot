@@ -3,6 +3,7 @@ langchain-community
 langchain-groq
 langchain-huggingface
 playwright
+langchain-playwright
 beautifulsoup4
 sentence-transformers
 chromadb
