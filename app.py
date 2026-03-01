@@ -3,9 +3,8 @@ import os
 import warnings
 import subprocess
 
-# --- CORRECT IMPORTS FOR 2026 ---
+# --- CORRECT 2026 STABLE IMPORTS ---
 from langchain_community.document_loaders import TextLoader
-# Using the more stable PlaywrightURLLoader for Cloud environments
 from langchain_community.document_loaders import PlaywrightURLLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -33,15 +32,17 @@ except KeyError:
 def initialize_rag(url=None):
     try:
         if url:
-            # Step A: Install Browser Binaries (required for Streamlit Cloud)
+            # Step A: Install the browser engine on the Streamlit server
+            # This prevents 'Browser not found' errors
             try:
                 subprocess.run(["playwright", "install", "chromium"], check=True)
             except Exception as e:
-                st.warning(f"Note: Browser install check: {e}")
+                st.info(f"System: Browser already initialized or {e}")
             
-            # Step B: Load using PlaywrightURLLoader (better for CSR sites)
+            # Step B: Use PlaywrightURLLoader for JavaScript-heavy sites
+            # This is the most stable loader for 2026
             loader = PlaywrightURLLoader(urls=[url], remove_selectors=["header", "footer"])
-            st.toast(f"Analyzing: {url}")
+            st.toast(f"Crawl started for: {url}")
         else:
             if not os.path.exists("knowledge_base.txt"):
                 st.error("Missing 'knowledge_base.txt' file!")
@@ -50,6 +51,7 @@ def initialize_rag(url=None):
         
         docs = loader.load()
         
+        # Step 2: Split and Embed
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         splits = text_splitter.split_documents(docs)
         
@@ -57,6 +59,7 @@ def initialize_rag(url=None):
         vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
         
+        # Step 3: Initialize LLM
         llm = ChatGroq(
             groq_api_key=groq_api_key, 
             model_name="llama-3.3-70b-versatile",
@@ -66,7 +69,7 @@ def initialize_rag(url=None):
         system_prompt = (
             "You are an intelligent university assistant. "
             "Use the provided context to answer the question accurately. "
-            "Context: {context}"
+            "\n\nContext: {context}"
         )
         
         prompt = ChatPromptTemplate.from_messages([
@@ -89,7 +92,7 @@ with st.sidebar:
     if st.button("Learn from Website"):
         if web_url:
             st.session_state.rag_chain = initialize_rag(url=web_url)
-            st.success("Knowledge Base Updated!")
+            st.success("Website Learned Successfully!")
         else:
             st.warning("Please enter a URL.")
     
@@ -102,7 +105,7 @@ if "rag_chain" not in st.session_state:
 
 rag_chain = st.session_state.rag_chain
 
-# --- 5. CHAT ---
+# --- 5. CHAT INTERFACE ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -118,7 +121,7 @@ if user_input := st.chat_input("Ask a question..."):
     with st.chat_message("assistant"):
         if rag_chain:
             try:
-                with st.spinner("Searching..."):
+                with st.spinner("Processing..."):
                     response = rag_chain.invoke({"input": user_input})
                     answer = response["answer"]
                     st.markdown(answer)
