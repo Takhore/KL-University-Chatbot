@@ -118,3 +118,38 @@ Phones: Strictly restricted in academic corridors and classrooms.
 - Learning Management System (LMS): Used for 24/7 access to e-tutorials, course content, digital assignments, and quizzes.
 - New ERP (newerp.kluniversity.in): The primary portal for tracking live attendance, internal marks, exam registration, and fee payments.
 - Language Policy: KLU is an English-medium campus. All formal communication between students and faculty must be in English to enhance professional employability.
+
+Faculty Data
+Dr. ARPIT JAIN (Employee ID: 7391) is located in Room Number M110.
+
+Dr. K SWATHI (Employee ID: 6786) is located in Room Number C214.
+
+Dr. M V Praveen Kumar (Employee ID: 9128) is located in Room Number C305.
+
+Mr. JONNALAGADDA SURYA KIRAN (Employee ID: 4654) is located in Room Number C321A.
+
+Dr. V. DEEPAK (Employee ID: 5269) is located in Room Number R305.
+
+Dr. T SANTHI SRI (Employee ID: 5394) is located in Room Number C215A.
+
+Dr. A SENTHIL (Employee ID: 6799) is the HOD of CSE3 and is located in Room Number C403.
+
+Dr. B. VIJAYA BABU (Employee ID: 2843) is located in Room Number C221A3.
+
+Ms. ALUR PRANEETHA (Employee ID: 8084) is located in Room Number C205.
+
+Ms. ANUMULA SRUTHI (Employee ID: 8110) is located in Room Number C205.
+
+Ms. ANJANA DEVI AKURATHI (Employee ID: 6921) is located in Room Number R305.
+
+Dr. ELANGOVAN GURUVA REDDY (Employee ID: 7190) is located in Room Number C205A.
+
+Dr. B. TIRAPATHI REDDY (Employee ID: 8964) is the HOD of CSE2 and is located in Room Number C203.
+
+Dr. Aswin Kumar S. V. is the HOD of HTE and is located on the R4 FLOOR.
+
+Dr. T. Pavan Kumar (Employee ID: 1277) is the HOD of CSE4 and is located in Room Number C603A.
+
+Dr. K. Narasimha Raju (Employee ID: 2272) is the HOD of HTI and is located in Room Number L610.
+
+Dr. K. Amarendra (Employee ID: 5291) is the HOD of CSE1 and is located in Room Number C316.
