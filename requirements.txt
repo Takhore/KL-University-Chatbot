@@ -7,3 +7,4 @@ langchain-classic
 sentence-transformers
 langchain-groq
 chromadb
+beautifulsoup4
